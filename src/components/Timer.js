@@ -3,29 +3,63 @@ import React from 'react';
 class Timer extends React.Component{
     constructor(){
         super();
-        this.state = {hours: 1, minutes: 0, seconds: 0};
+        this.state = {beginTime: new Date(), endTime: new Date(), timeElapsed: 0};
 
         this.resetClock = this.resetClock.bind(this);
+        this.incrementClock = this.incrementClock.bind(this);
+        this.startClock = this.startClock.bind(this);
+        this.stopClock = this.stopClock.bind(this);
+
+        this.isStarted = false;
+    }
+
+    componentWillUnmount(){
+        this.resetClock();
+    }
+
+    startClock(){
+        this.setState(state => ({
+            beginTime: new Date(),
+        }))
+        this.intervalId = setInterval(this.incrementClock, 1000);
+        this.isStarted = true;
+    }
+
+    stopClock(){
+        clearInterval(this.intervalId);
+        this.isStarted = false;
     }
 
     resetClock(){
         this.setState(state => ({
-            hours: 0,
-            minutes: 0,
-            seconds: 0,
+            beginTime: new Date(), 
+            endTime: new Date(),
+            timeElapsed: 0,
         }))
+        clearInterval(this.intervalId);
     }
-    
+
+    incrementClock(){
+        this.setState(state => ({
+            timeElapsed: state.timeElapsed + 1000,
+        }))  
+    }
 
     render(){
         return(
             <div>
                 <div>
-                    Time spent: {this.state.hours} : {this.state.minutes > 10 ? this.state.minutes : `0${this.state.minutes}`} : {this.state.seconds > 10 ? this.state.seconds : `0${this.state.seconds}`}
+                    Time spent: {this.state.timeElapsed}
                 </div>
-                <button onClick={this.resetClock}>
-                    Reset
-                </button>  
+                    <button disabled={this.isStarted} onClick={this.startClock}>
+                        Start
+                    </button> 
+                    <button disabled={!this.isStarted} onClick={this.stopClock}>
+                        Stop
+                    </button>
+                    <button onClick={this.resetClock}>
+                        Reset
+                    </button>
             </div> 
         )
     }
