@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 
 const TimerControlButtons = ({props, onStartClick, onResetClick}) =>{
 
-    function handleStartClick(event){
-        onStartClick(event.target.name);
-    }
+    const handleStartClick = React.useCallback((event) => onStartClick(event.target.name), [onStartClick]);
 
     function handleResetClick(event){
         onResetClick(event.target.name);
