@@ -1,31 +1,52 @@
 import React from 'react';
+import TimerDisplay from "./TimerDisplay"
+import TimeControlButtons from "./TimerControlButtons"
 
 class Timer extends React.Component{
     constructor(){
         super();
-        this.state = {hours: 1, minutes: 0, seconds: 0};
-
-        this.resetClock = this.resetClock.bind(this);
+        this.state = {beginTime: new Date(), endTime: new Date(), timeElapsed: 0, isStarted: false};
     }
 
-    resetClock(){
+    componentWillUnmount(){
+        this.resetClock();
+    }
+
+    startClock = () =>{
         this.setState(state => ({
-            hours: 0,
-            minutes: 0,
-            seconds: 0,
+            beginTime: new Date(),
+        }))
+        this.intervalId = setInterval(this.incrementClock, 1000);
+        this.isStarted = true;
+    }
+
+    stopClock = () => {
+        clearInterval(this.intervalId);
+        this.setState(state => ({
+            isStarted: true,
         }))
     }
-    
+
+    resetClock = () => {
+        this.setState(state => ({
+            beginTime: new Date(), 
+            endTime: new Date(),
+            timeElapsed: 0,
+        }))
+        clearInterval(this.intervalId);
+    }
+
+    incrementClock = () => {
+        this.setState(state => ({
+            timeElapsed: state.timeElapsed + 1000,
+        }))  
+    }
 
     render(){
         return(
             <div>
-                <div>
-                    Time spent: {this.state.hours} : {this.state.minutes > 10 ? this.state.minutes : `0${this.state.minutes}`} : {this.state.seconds > 10 ? this.state.seconds : `0${this.state.seconds}`}
-                </div>
-                <button onClick={this.resetClock}>
-                    Reset
-                </button>  
+                <TimerDisplay timeElapsed={this.state.timeElapsed}/>
+                <TimeControlButtons onStartClick={this.startClock} onResetClick={this.resetClock}/>
             </div> 
         )
     }
